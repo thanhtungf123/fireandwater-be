@@ -104,7 +104,12 @@ async function main() {
   }
 
   // 4) Iframe domain whitelist
-  for (const domain of ["html5.gamedistribution.com", "gamedistribution.com"]) {
+  for (const domain of [
+    "html5.gamedistribution.com",
+    "gamedistribution.com",
+    "www.gameflare.com",
+    "gameflare.com",
+  ]) {
     await AllowedIframeDomain.findOneAndUpdate(
       { domain },
       { $set: { domain } },

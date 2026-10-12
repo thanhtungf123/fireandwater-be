@@ -3,6 +3,8 @@ import { AllowedIframeDomain } from "../models/AllowedIframeDomain";
 const BASELINE_ALLOWED_HOSTS = [
   "html5.gamedistribution.com",
   "gamedistribution.com",
+  "www.gameflare.com",
+  "gameflare.com",
 ];
 
 /** Normalize to a URL-safe slug: lowercase, no diacritics, hyphen-separated. */

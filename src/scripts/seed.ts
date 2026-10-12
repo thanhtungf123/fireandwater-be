@@ -26,11 +26,16 @@ async function main() {
   console.log("Connected. Seeding...");
 
   // 1) Games (official Lửa và Nước versions)
+  //    IMPORTANT: everything here is $setOnInsert — seed only CREATES a game
+  //    when its slug does not exist yet. It never overwrites an existing game,
+  //    so admin edits (iframeUrl, khung, tên, trạng thái…) survive re-runs and
+  //    re-deploys. To re-push seed defaults onto a game, delete it in Admin
+  //    first (or edit it there directly).
   for (const g of GAME_SEEDS) {
-    await Game.findOneAndUpdate(
+    const result = await Game.findOneAndUpdate(
       { slug: g.slug },
       {
-        $set: {
+        $setOnInsert: {
           name: g.name,
           slug: g.slug,
           iframeUrl: g.iframeUrl ?? iframeUrlFor(g.gameId),
@@ -40,14 +45,13 @@ async function main() {
           group: "lua-va-nuoc",
           order: g.order,
           status: "published",
-        },
-        $setOnInsert: {
           related: { mode: "auto", limit: 8, gameIds: [] },
         },
       },
-      { upsert: true, returnDocument: "after" }
+      { upsert: true, returnDocument: "after", includeResultMetadata: true }
     );
-    console.log(`  game: ${g.slug}`);
+    const created = !result.lastErrorObject?.updatedExisting;
+    console.log(`  game: ${g.slug} ${created ? "(created)" : "(kept)"}`);
   }
 
   // 1b) Hide games that were removed from the catalogue (e.g. broken thumbnail).
@@ -60,20 +64,20 @@ async function main() {
   }
 
   // 2) Homepage settings -> default player = game #1
+  //    All $setOnInsert: seed only fills these defaults when the settings doc
+  //    is first created. Admin edits in "Trang chủ"/"Giao diện" are never
+  //    reset by a re-run.
   const first = await Game.findOne({ slug: "lua-va-nuoc-1" }).lean();
   await SiteSetting.findOneAndUpdate(
     { key: "default" },
     {
-      $set: {
+      $setOnInsert: {
         homeDefaultGameId: first?._id,
         homeH1: "Trò chơi Lửa và Nước",
         homeRelated: { mode: "auto", limit: 8, gameIds: [] },
         seoTitle: "Trò chơi Lửa và Nước – Chơi ngay trên trình duyệt",
         seoDescription:
           "Chơi Lửa và Nước (Fireboy and Watergirl) trực tiếp trên trang chủ. Đủ 7 phần: Forest, Light, Ice, Crystal, Elements, Fairy Tales, And Friends.",
-      },
-      // Branding/footer defaults: only on first insert so admin edits persist.
-      $setOnInsert: {
         headerTitle: "Lửa và Nước",
         footerText: "© Game thuộc về nhà phát triển tương ứng.",
         footerLinks: [
@@ -97,7 +101,7 @@ async function main() {
   for (const p of staticPages) {
     await StaticPage.findOneAndUpdate(
       { slug: p.slug },
-      { $set: { title: p.title, status: "published" } },
+      { $setOnInsert: { title: p.title, status: "published" } },
       { upsert: true }
     );
     console.log(`  static page: ${p.slug}`);

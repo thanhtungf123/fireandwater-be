@@ -109,6 +109,8 @@ async function main() {
     "gamedistribution.com",
     "www.gameflare.com",
     "gameflare.com",
+    "html5.gamemonetize.co",
+    "html5.gamemonetize.com",
   ]) {
     await AllowedIframeDomain.findOneAndUpdate(
       { domain },

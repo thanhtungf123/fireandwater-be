@@ -5,6 +5,8 @@ const BASELINE_ALLOWED_HOSTS = [
   "gamedistribution.com",
   "www.gameflare.com",
   "gameflare.com",
+  "html5.gamemonetize.co",
+  "html5.gamemonetize.com",
 ];
 
 /** Normalize to a URL-safe slug: lowercase, no diacritics, hyphen-separated. */

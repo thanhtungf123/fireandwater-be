@@ -9,7 +9,13 @@ import {
   signToken,
   type AuthedRequest,
 } from "../lib/auth";
-import { slugify, isAllowedIframeUrl } from "../lib/validate";
+import {
+  slugify,
+  isAllowedIframeUrl,
+  BASELINE_ALLOWED_HOSTS,
+  normalizeIframeDomain,
+} from "../lib/validate";
+import { AllowedIframeDomain } from "../models/AllowedIframeDomain";
 import { uploadBuffer, cloudinaryConfigured } from "../lib/cloudinary";
 
 // ---------------- Auth ----------------
@@ -291,6 +297,52 @@ export async function reorderPages(req: AuthedRequest, res: Response) {
       StaticPage.updateOne({ slug }, { $set: { headerOrder: i } })
     )
   );
+  res.json({ ok: true });
+}
+
+// ---------------- Iframe domain whitelist ----------------
+
+/**
+ * Lists the embed hosts an iframe URL may use: the built-in `baseline`
+ * (locked, defined in code) and the admin-managed `custom` hosts (stored in
+ * DB, deletable). Custom hosts that duplicate a baseline one are hidden so a
+ * host never appears twice.
+ */
+export async function listIframeDomains(_req: AuthedRequest, res: Response) {
+  const rows = await AllowedIframeDomain.find().sort({ domain: 1 }).lean();
+  const baseline = new Set(BASELINE_ALLOWED_HOSTS.map((d) => d.toLowerCase()));
+  res.json({
+    baseline: BASELINE_ALLOWED_HOSTS,
+    custom: rows
+      .filter((d) => !baseline.has(d.domain.toLowerCase()))
+      .map((d) => ({
+        _id: String(d._id),
+        domain: d.domain,
+        createdAt: d.createdAt,
+      })),
+  });
+}
+
+export async function addIframeDomain(req: AuthedRequest, res: Response) {
+  const domain = normalizeIframeDomain(String(req.body?.domain ?? ""));
+  if (!domain) return res.status(400).json({ error: "domain_invalid" });
+  if (BASELINE_ALLOWED_HOSTS.map((d) => d.toLowerCase()).includes(domain)) {
+    return res.status(400).json({ error: "domain_builtin" });
+  }
+  if (await AllowedIframeDomain.findOne({ domain })) {
+    return res.status(400).json({ error: "domain_exists" });
+  }
+  const created = await AllowedIframeDomain.create({ domain });
+  res.status(201).json({
+    _id: String(created._id),
+    domain: created.domain,
+    createdAt: created.createdAt,
+  });
+}
+
+export async function deleteIframeDomain(req: AuthedRequest, res: Response) {
+  const deleted = await AllowedIframeDomain.findByIdAndDelete(req.params.id);
+  if (!deleted) return res.status(404).json({ error: "not_found" });
   res.json({ ok: true });
 }
 

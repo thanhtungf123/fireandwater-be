@@ -50,6 +50,11 @@ router.get("/admin/pages/:slug", requireAuth, h(admin.getPage));
 router.put("/admin/pages/:slug", requireAuth, h(admin.updatePage));
 router.delete("/admin/pages/:slug", requireAuth, h(admin.deletePage));
 
+// ---- Admin: iframe domain whitelist ----
+router.get("/admin/iframe-domains", requireAuth, h(admin.listIframeDomains));
+router.post("/admin/iframe-domains", requireAuth, h(admin.addIframeDomain));
+router.delete("/admin/iframe-domains/:id", requireAuth, h(admin.deleteIframeDomain));
+
 // ---- Admin: image upload (Cloudinary) ----
 router.post("/admin/upload", requireAuth, upload.single("file"), h(admin.uploadImage));
 

@@ -12,13 +12,19 @@ export interface GameSeed {
   order: number;
   /** Optional thumbnail override when the default .jpeg path isn't available. */
   thumbnail?: string;
+  /**
+   * Optional iframe URL override. When set, the seed uses this exact embed URL
+   * instead of building a GameDistribution one from `gameId` (e.g. a Gameflare
+   * embed for a game GD blocks on this domain). Host must be whitelisted.
+   */
+  iframeUrl?: string;
 }
 
 const GD = "https://html5.gamedistribution.com";
 const IMG = "https://img.gamedistribution.com";
 
 export const GAME_SEEDS: GameSeed[] = [
-  { name: "Lửa và Nước 1 – Forest Temple", slug: "lua-va-nuoc-1", gameId: "a55c9cc9c21e4fc683c8c6857f3d0c75", frameWidth: 900, frameHeight: 510, order: 1 },
+  { name: "Lửa và Nước 1 – Forest Temple", slug: "lua-va-nuoc-1", gameId: "a55c9cc9c21e4fc683c8c6857f3d0c75", frameWidth: 800, frameHeight: 635, order: 1, iframeUrl: "https://www.gameflare.com/embed/fireboy-and-watergirl-forest-temple/" },
   { name: "Lửa và Nước 2 – Light Temple", slug: "lua-va-nuoc-2", gameId: "383ad09b92c7446b9113cccc29630517", frameWidth: 900, frameHeight: 510, order: 2 },
   { name: "Lửa và Nước 3 – Ice Temple", slug: "lua-va-nuoc-3", gameId: "f3a6e1ac0a77412289cbac47658b2b68", frameWidth: 900, frameHeight: 510, order: 3 },
   { name: "Lửa và Nước 4 – Crystal Temple", slug: "lua-va-nuoc-4", gameId: "3790681b69584409b7f681a8e400102d", frameWidth: 900, frameHeight: 510, order: 4 },

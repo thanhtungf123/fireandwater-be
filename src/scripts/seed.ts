@@ -33,7 +33,7 @@ async function main() {
         $set: {
           name: g.name,
           slug: g.slug,
-          iframeUrl: iframeUrlFor(g.gameId),
+          iframeUrl: g.iframeUrl ?? iframeUrlFor(g.gameId),
           thumbnail: g.thumbnail ?? thumbnailFor(g.gameId),
           frameWidth: g.frameWidth,
           frameHeight: g.frameHeight,

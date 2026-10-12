@@ -129,6 +129,7 @@ export async function getHomePayload() {
 
   return {
     h1: setting?.homeH1 || "Trò chơi Lửa và Nước",
+    showGameTitle: setting?.homeShowGameTitle ?? true,
     seo: {
       title: setting?.seoTitle,
       description: setting?.seoDescription,

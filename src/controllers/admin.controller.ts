@@ -169,6 +169,7 @@ export async function updateSettings(req: AuthedRequest, res: Response) {
   for (const key of [
     "homeDefaultGameId",
     "homeH1",
+    "homeShowGameTitle",
     "homeSeoContentHtml",
     "homeMainGameIds",
     "homeRelated",

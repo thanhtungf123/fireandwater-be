@@ -7,6 +7,8 @@ export interface ISiteSetting {
   key: "default";
   homeDefaultGameId?: mongoose.Types.ObjectId;
   homeH1: string;
+  /** Show the default game's name above the player on the homepage. */
+  homeShowGameTitle: boolean;
   homeSeoContentHtml?: string;
   homeMainGameIds: mongoose.Types.ObjectId[];
   homeRelated: RelatedConfig;
@@ -43,6 +45,7 @@ const SiteSettingSchema = new Schema<ISiteSetting>(
     key: { type: String, enum: ["default"], default: "default", unique: true },
     homeDefaultGameId: { type: Schema.Types.ObjectId, ref: "Game" },
     homeH1: { type: String, default: "Trò chơi Lửa và Nước" },
+    homeShowGameTitle: { type: Boolean, default: true },
     homeSeoContentHtml: String,
     homeMainGameIds: [{ type: Schema.Types.ObjectId, ref: "Game" }],
     homeRelated: {
